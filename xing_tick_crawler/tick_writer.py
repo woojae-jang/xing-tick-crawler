@@ -5,7 +5,7 @@ from xing_tick_crawler import utils
 from xing_tick_crawler.constant import (
     DataType,
     ORDER_BOOK_COLUMNS,
-    CONCLUSION_COLUMNS,
+    TICK_COLUMNS,
     STOCK_FUTURES_ORDER_BOOK_COLUMNS,
     STOCK_FUTURES_CONCLUSION_COLUMNS
 )
@@ -31,10 +31,10 @@ def get_csv_writer(code: str, tick_type: DataType) -> Tuple[io.TextIOWrapper, cs
 
         if tick_type in [DataType.KOSPI_ORDER_BOOK, DataType.KOSDAQ_ORDER_BOOK]:
             if not is_exist:
-                writer.writerow(CONCLUSION_COLUMNS)
+                writer.writerow(ORDER_BOOK_COLUMNS)
         elif tick_type in [DataType.KOSPI_TICK, DataType.KOSDAQ_TICK]:
             if not is_exist:
-                writer.writerow(ORDER_BOOK_COLUMNS)
+                writer.writerow(TICK_COLUMNS)
         elif tick_type == DataType.STOCK_FUTURES_ORDER_BOOK:
             if not is_exist:
                 writer.writerow(STOCK_FUTURES_ORDER_BOOK_COLUMNS)

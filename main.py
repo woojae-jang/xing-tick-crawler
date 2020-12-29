@@ -24,7 +24,7 @@ if __name__ == "__main__":
             waiting_tasks = queue.qsize()
             tick = queue.get()
             tick_type, tick_data = tick
-            print(f"\r{datetime.now()} waiting tasks : {waiting_tasks}", end='')
+            print(f"\r{datetime.now()} waiting tasks : {str(waiting_tasks).zfill(6)}", end='')
 
             tick_writer.handle_tick_data(tick_data, tick_type)
 

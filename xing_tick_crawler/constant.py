@@ -58,7 +58,7 @@ TICK_FIELDS = [
     "status",
     "jnilvolume",
 ]
-CONCLUSION_COLUMNS = [
+TICK_COLUMNS = [
     "system_time",
     *TICK_FIELDS
 ]
