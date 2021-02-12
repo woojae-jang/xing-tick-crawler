@@ -16,7 +16,7 @@ class XASessionEventHandler:
             print("로그인 성공")
             XASessionEventHandler.login_state = 1
         else:
-            print("로그인 실패")
+            print(f"로그인 실패 {msg}")
 
 
 class XAQueryEventHandler:
@@ -39,7 +39,7 @@ class XARealEventHandler:
             values.append(self.GetFieldData("OutBlock", field))
         return values
 
-    def handle_conclusion(self) -> list:
+    def handle_tick(self) -> list:
         """
         코스피, 코스닥 체결 데이터
         """
@@ -57,7 +57,7 @@ class XARealEventHandler:
             values.append(self.GetFieldData("OutBlock", field))
         return values
 
-    def handle_stock_futures_conclusion(self) -> list:
+    def handle_stock_futures_tick(self) -> list:
         """
         주식선물 체결 데이터
         """
@@ -78,7 +78,7 @@ class XARealEventHandler:
         """
         S3_ : 코스피 체결
         """
-        values = self.handle_conclusion()
+        values = self.handle_tick()
         values.insert(0, time.time())
         return DataType.KOSPI_TICK, values
 
@@ -94,7 +94,7 @@ class XARealEventHandler:
         """
         K3 : 코스닥 체결
         """
-        values = self.handle_conclusion()
+        values = self.handle_tick()
         values.insert(0, time.time())
         return DataType.KOSDAQ_TICK, values
 
@@ -110,7 +110,7 @@ class XARealEventHandler:
         """
         JC0 : 주식선물 체결
         """
-        values = self.handle_stock_futures_conclusion()
+        values = self.handle_stock_futures_tick()
         values.insert(0, time.time())
         return DataType.STOCK_FUTURES_TICK, values
 

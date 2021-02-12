@@ -40,8 +40,8 @@ def stock_crawler(queue: Queue,
 
     # 체결
     if kospi_tick:
-        real_time_kospi_conclusion = RealTimeKospiTick(queue=queue)
-        real_time_kospi_conclusion.set_code_list(code_list)
+        real_time_kospi_tick = RealTimeKospiTick(queue=queue)
+        real_time_kospi_tick.set_code_list(code_list)
     # ############################################################################################################
 
     # ################################# 코스닥 ###################################################################
@@ -57,8 +57,8 @@ def stock_crawler(queue: Queue,
 
     # 체결
     if kosdaq_tick:
-        real_time_kosdaq_conclusion = RealTimeKosdaqTick(queue=queue)
-        real_time_kosdaq_conclusion.set_code_list(code_list)
+        real_time_kosdaq_tick = RealTimeKosdaqTick(queue=queue)
+        real_time_kosdaq_tick.set_code_list(code_list)
     # ############################################################################################################
 
     while True:
@@ -84,8 +84,8 @@ def stock_futures_crawler(queue: Queue,
 
     # 체결
     if stock_futures_order_tick:
-        real_time_stock_futures_conclusion = RealTimeStockFuturesTick(queue=queue)
-        real_time_stock_futures_conclusion.set_code_list(code_list, field="futcode")
+        real_time_stock_futures_tick = RealTimeStockFuturesTick(queue=queue)
+        real_time_stock_futures_tick.set_code_list(code_list, field="futcode")
     # ############################################################################################################
 
     while True:

@@ -94,7 +94,7 @@ STOCK_FUTURES_TICK_FIELDS = [
     "jgubun",        # 장운영정보
     "jnilvolume",    # 전일동시간대거래량
 ]
-STOCK_FUTURES_CONCLUSION_COLUMNS = [
+STOCK_FUTURES_TICK_COLUMNS = [
     "system_time",
     *STOCK_FUTURES_TICK_FIELDS
 ]
