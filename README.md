@@ -22,13 +22,10 @@ TICKER_DATA_FOLDER_PATH = "."  # tick 데이터 저장할 위치
 #### 2. main.py 생성 및 실행
  - 필요없는 데이터 off 하고, 실행
 ```python
+from xing_tick_crawler.crawler import stock_crawler, stock_futures_crawler
+from datetime import datetime
 from multiprocessing import Process, get_context
 from multiprocessing.queues import Queue
-from datetime import datetime
-from xing_tick_crawler.crawler import stock_crawler, stock_futures_crawler
-from xing_tick_crawler import tick_writer
-
-BUNDLE_BY_MARKET = True
 
 if __name__ == "__main__":
     KOSPI_ORDER_BOOK = False               # 코스피 전종목 호가
@@ -45,17 +42,13 @@ if __name__ == "__main__":
     p0.start()
     p1.start()
 
-    try:
-        while True:
-            tick = queue.get()
-            waiting_tasks = queue.qsize()
-            tick_type, tick_data = tick
-            print(f"\r{datetime.now()} waiting tasks : {'%6d' % waiting_tasks}", end='')
-            tick_writer.handle_tick_data(tick_data, tick_type)
+    while True:
+        tick = queue.get()
+        waiting_tasks = queue.qsize()
+        tick_type, tick_data = tick
+        print(f"\r{datetime.now()} waiting tasks : {'%6d' % waiting_tasks}", end='')
+        print(tick_type, tick_data)
 
-    except KeyboardInterrupt:
-        tick_writer.close_all_writer()
-        print("사용자 종료")
 
 ```
 

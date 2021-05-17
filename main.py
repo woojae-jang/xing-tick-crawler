@@ -2,9 +2,6 @@ from xing_tick_crawler.crawler import stock_crawler, stock_futures_crawler
 from datetime import datetime
 from multiprocessing import Process, get_context
 from multiprocessing.queues import Queue
-from xing_tick_crawler import tick_writer
-
-BUNDLE_BY_MARKET = True
 
 if __name__ == "__main__":
     KOSPI_ORDER_BOOK = False               # 코스피 전종목 호가
@@ -21,15 +18,9 @@ if __name__ == "__main__":
     p0.start()
     p1.start()
 
-    try:
-        while True:
-            tick = queue.get()
-            waiting_tasks = queue.qsize()
-            tick_type, tick_data = tick
-            print(f"\r{datetime.now()} waiting tasks : {'%6d' % waiting_tasks}", end='')
-
-            tick_writer.handle_tick_data(tick_data, tick_type)
-
-    except KeyboardInterrupt:
-        tick_writer.close_all_writer()
-        print("사용자 종료")
+    while True:
+        tick = queue.get()
+        waiting_tasks = queue.qsize()
+        tick_type, tick_data = tick
+        print(f"\r{datetime.now()} waiting tasks : {'%6d' % waiting_tasks}", end='')
+        print(tick_type, tick_data)
