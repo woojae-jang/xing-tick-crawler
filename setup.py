@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="xing-tick-crawler",
-    version='0.0.3',
+    version='0.0.4',
     url="https://github.com/quantrading/xing-tick-crawler",
     license="MIT",
     author="Jang Woo Jae",
