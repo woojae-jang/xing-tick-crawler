@@ -57,6 +57,7 @@ class RealTimeStockFuturesOrderBook(RealTimeAbs):
     """
     [JH0] 주식선물호가
     """
+
     def __init__(self, queue: Queue):
         super().__init__(queue, "JH0")
 
@@ -65,5 +66,51 @@ class RealTimeStockFuturesTick(RealTimeAbs):
     """
     [JC0] 주식선물체결
     """
+
     def __init__(self, queue: Queue):
         super().__init__(queue, "JC0")
+
+
+class RealTimeStockAfterMarketKospiOrderBook(RealTimeAbs):
+    """
+    [DH1] KOSPI시간외단일가호가잔량
+    """
+
+    def __init__(self, queue: Queue):
+        super().__init__(queue, "DH1")
+
+
+class RealTimeStockAfterMarketKospiTick(RealTimeAbs):
+    """
+    [DS3] KOSPI시간외단일가체결
+    """
+
+    def __init__(self, queue: Queue):
+        super().__init__(queue, "DS3")
+
+
+class RealTimeStockAfterMarketKosdaqOrderBook(RealTimeAbs):
+    """
+    [DHA] KOSDAQ시간외단일가호가잔량
+    """
+
+    def __init__(self, queue: Queue):
+        super().__init__(queue, "DHA")
+
+
+class RealTimeStockAfterMarketKosdaqTick(RealTimeAbs):
+    """
+    [DK3] KOSDAQ시간외단일가체결
+    """
+
+    def __init__(self, queue: Queue):
+        super().__init__(queue, "DK3")
+
+
+class RealTimeStockViOnOff(RealTimeAbs):
+    """
+    [VI_] 주식VI발동해제
+    """
+
+    def __init__(self, queue: Queue):
+        super().__init__(queue, "VI_")
