@@ -114,3 +114,21 @@ class RealTimeStockViOnOff(RealTimeAbs):
 
     def __init__(self, queue: Queue):
         super().__init__(queue, "VI_")
+
+
+class RealTimeKospiBrokerInfo(RealTimeAbs):
+    """
+    [K1_] KOSPI거래원
+    """
+
+    def __init__(self, queue: Queue):
+        super().__init__(queue, "K1_")
+
+
+class RealTimeKosdaqBrokerInfo(RealTimeAbs):
+    """
+    [OK_] KOSDAQ거래원
+    """
+
+    def __init__(self, queue: Queue):
+        super().__init__(queue, "OK_")

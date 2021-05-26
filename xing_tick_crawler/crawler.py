@@ -15,6 +15,8 @@ from xing_tick_crawler.real_time import (
     RealTimeStockAfterMarketKosdaqOrderBook,
     RealTimeStockAfterMarketKosdaqTick,
     RealTimeStockViOnOff,
+    RealTimeKospiBrokerInfo,
+    RealTimeKosdaqBrokerInfo,
 )
 from xing_tick_crawler import utils
 
@@ -24,17 +26,18 @@ TODAY_PATH = f"{TICKER_DATA_FOLDER_PATH}/{TODAY}"
 utils.make_dir(TODAY_PATH)
 
 
-def stock_crawler(queue: Queue,
-                  kospi_order_book=True,
-                  kospi_tick=True,
-                  kosdaq_order_book=True,
-                  kosdaq_tick=True,
-                  ):
-    kospi_after_marekt_order_book = True
-    kospi_after_market_tick = True
-    kosdaq_after_market_order_book = True
-    kosdaq_after_market_tick = True
-    stock_vi_on_off = True
+def stock_market_crawler(queue: Queue, **kwargs):
+    kospi_order_book = kwargs.get('KOSPI_ORDER_BOOK', True)
+    kospi_tick = kwargs.get('KOSPI_TICK', True)
+    kosdaq_order_book = kwargs.get('KOSDAQ_ORDER_BOOK', True)
+    kosdaq_tick = kwargs.get('KOSDAQ_TICK', True)
+    kospi_after_marekt_order_book = kwargs.get('KOSPI_AFTER_MARKET_ORDER_BOOK', True)
+    kospi_after_market_tick = kwargs.get('KOSPI_AFTER_MARKET_TICK', True)
+    kosdaq_after_market_order_book = kwargs.get('KOSDAQ_AFTER_MARKET_ORDER_BOOK', True)
+    kosdaq_after_market_tick = kwargs.get('KOSDAQ_AFTER_MARKET_TICK', True)
+    stock_vi_on_off = kwargs.get('STOCK_VI_ON_OFF', True)
+    kospi_broker_info = kwargs.get('KOSPI_BROKER_INFO', True)
+    kosdaq_broker_info = kwargs.get('KOSDAQ_BROKER_INFO', True)
 
     _ = XingAPI.login(is_real_server=True)
 
@@ -56,6 +59,11 @@ def stock_crawler(queue: Queue,
     if kospi_tick:
         real_time_kospi_tick = RealTimeKospiTick(queue=queue)
         real_time_kospi_tick.set_code_list(code_list)
+
+    # 거래원
+    if kospi_broker_info:
+        real_time_kospi_broker_info = RealTimeKospiBrokerInfo(queue=queue)
+        real_time_kospi_broker_info.set_code_list(code_list)
 
     # 시간외 호가
     if kospi_after_marekt_order_book:
@@ -85,6 +93,11 @@ def stock_crawler(queue: Queue,
         real_time_kosdaq_tick = RealTimeKosdaqTick(queue=queue)
         real_time_kosdaq_tick.set_code_list(code_list)
 
+    # 거래원
+    if kosdaq_broker_info:
+        real_time_kosdaq_broker_info = RealTimeKosdaqBrokerInfo(queue=queue)
+        real_time_kosdaq_broker_info.set_code_list(code_list)
+
     # 시간외 호가
     if kosdaq_after_market_order_book:
         real_time_stock_after_market_kosdaq_order_book = RealTimeStockAfterMarketKosdaqOrderBook(queue=queue)
@@ -105,10 +118,10 @@ def stock_crawler(queue: Queue,
         pythoncom.PumpWaitingMessages()
 
 
-def stock_futures_crawler(queue: Queue,
-                          stock_futures_order_book=True,
-                          stock_futures_order_tick=True
-                          ):
+def futures_option_market_crawler(queue: Queue, **kwargs):
+    stock_futures_order_book = kwargs.get('STOCK_FUTURES_ORDER_BOOK', True)
+    stock_futures_order_tick = kwargs.get('STOCK_FUTURES_TICK', True)
+
     _ = XingAPI.login(is_real_server=True)
 
     # ################################# 주식선물 ##################################################################

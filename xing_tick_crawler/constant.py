@@ -19,6 +19,9 @@ class DataType(Enum):
 
     STOCK_VI_ON_OFF = 11
 
+    KOSPI_BROKER_INFO = 12
+    KOSDAQ_BROKER_INFO = 13
+
 
 ORDER_BOOK_FIELDS = [
     "shcode", "hotime", "donsigubun", "totofferrem", "totbidrem",
@@ -282,6 +285,97 @@ STOCK_VI_ON_OFF_COLUMNS = [
     *STOCK_VI_ON_OFF_FIELDS
 ]
 
+# 코스피, 코스닥 거래원
+BROKER_INFO_FIELDS = [
+    "shcode",               # 단축코드
+    "offerno1",	            # 매도증권사코드1
+    "bidno1",	            # 매수증권사코드1
+    "offertrad1",	        # 매도회원사명1
+    "bidtrad1",	            # 매수회원사명1
+    "tradmdvol1",	        # 매도거래량1
+    "tradmsvol1",	        # 매수거래량1
+    "tradmdrate1",	        # 매도거래량비중1
+    "tradmsrate1",	        # 매도거래량비중1
+    "tradmdcha1",	        # 매도거래량직전대비1
+    "tradmscha1",	        # 매수거래량직전대비1
+    "offerno2",	            # 매도증권사코드2
+    "bidno2",	            # 매수증권사코드2
+    "offertrad2",	        # 매도회원사명2
+    "bidtrad2",	            # 매수회원사명2
+    "tradmdvol2",	        # 매도거래량2
+    "tradmsvol2",	        # 매수거래량2
+    "tradmdrate2",	        # 매도거래량비중2
+    "tradmsrate2",	        # 매수거래량비중2
+    "tradmdcha2",	        # 매도거래량직전대비2
+    "tradmscha2",	        # 매수거래량직전대비2
+    "offerno3",	            # 매도증권사코드3
+    "bidno3",	            # 매수증권사코드3
+    "offertrad3",	        # 매도회원사명3
+    "bidtrad3",	            # 매수회원사명3
+    "tradmdvol3",	        # 매도거래량3
+    "tradmsvol3",	        # 매수거래량3
+    "tradmdrate3",	        # 매도거래량비중3
+    "tradmsrate3",	        # 매수거래량비중3
+    "tradmdcha3",	        # 매도거래량직전대비3
+    "tradmscha3",	        # 매수거래량직전대비3
+    "offerno4",	            # 매도증권사코드4
+    "bidno4",	            # 매수증권사코드4
+    "offertrad4",	        # 매도회원사명4
+    "bidtrad4",	            # 매수회원사명4
+    "tradmdvol4",	        # 매도거래량4
+    "tradmsvol4",	        # 매수거래량4
+    "tradmdrate4",	        # 매도거래량비중4
+    "tradmsrate4",	        # 매수거래량비중4
+    "tradmdcha4",	        # 매도거래량직전대비4
+    "tradmscha4",	        # 매수거래량직전대비4
+    "offerno5",	            # 매도증권사코드5
+    "bidno5",	            # 매수증권사코드5
+    "offertrad5",	        # 매도회원사명5
+    "bidtrad5",	            # 매수회원사명5
+    "tradmdvol5",	        # 매도거래량5
+    "tradmsvol5",	        # 매수거래량5
+    "tradmdrate5",	        # 매도거래량비중5
+    "tradmsrate5",	        # 매수거래량비중5
+    "tradmdcha5",	        # 매도거래량직전대비5
+    "tradmscha5",	        # 매수거래량직전대비5
+    "ftradmdvol",	        # 외국계증권사매도합계
+    "ftradmsvol",	        # 외국계증권사매수합계
+    "ftradmdrate",	        # 외국계증권사매도거래량비중
+    "ftradmsrate",	        # 외국계증권사매수거래량비중
+    "ftradmdcha",	        # 외국계증권사매도거래량직전대비
+    "ftradmscha",	        # 외국계증권사매수거래량직전대비
+    "tradmdval1",	        # 매도거래대금1
+    "tradmsval1",	        # 매수거래대금1
+    "tradmdavg1",	        # 매도평균단가1
+    "tradmsavg1",	        # 매수평균단가1
+    "tradmdval2",	        # 매도거래대금2
+    "tradmsval2",	        # 매수거래대금2
+    "tradmdavg2",	        # 매도평균단가2
+    "tradmsavg2",	        # 매수평균단가2
+    "tradmdval3",	        # 매도거래대금3
+    "tradmsval3",	        # 매수거래대금3
+    "tradmdavg3",	        # 매도평균단가3
+    "tradmsavg3",	        # 매수평균단가3
+    "tradmdval4",	        # 매도거래대금4
+    "tradmsval4",	        # 매수거래대금4
+    "tradmdavg4",	        # 매도평균단가4
+    "tradmsavg4",	        # 매수평균단가4
+    "tradmdval5",	        # 매도거래대금5
+    "tradmsval5",	        # 매수거래대금5
+    "tradmdavg5",	        # 매도평균단가5
+    "tradmsavg5",	        # 매수평균단가5
+    "ftradmdval",	        # 외국계증권사매도거래대금
+    "ftradmsval",	        # 외국계증권사매수거래대금
+    "ftradmdavg",	        # 외국계증권사매도평균단가
+    "ftradmsavg",	        # 외국계증권사매수평균단가
+]
+
+BROKER_INFO_COLUMNS = [
+    "system_time",
+    *BROKER_INFO_FIELDS
+]
+
+
 TR_CODE_TICK_TYPE_MAP = {
     "H1_": DataType.KOSPI_ORDER_BOOK,                   # 코스피 호가
     "S3_": DataType.KOSPI_TICK,                         # 코스피 체결
@@ -294,6 +388,8 @@ TR_CODE_TICK_TYPE_MAP = {
     "DHA": DataType.KOSDAQ_AFTER_MARKET_ORDER_BOOK,     # 코스닥 시간외 단일가 호가
     "DK3": DataType.KOSDAQ_AFTER_MARKET_TICK,           # 코스닥 시간외 단일가 체결
     "VI_": DataType.STOCK_VI_ON_OFF,                    # 주식 VI 발동해제
+    "K1_": DataType.KOSPI_BROKER_INFO,                  # 코스피 거래원
+    "OK_": DataType.KOSDAQ_BROKER_INFO,                 # 코스닥 거래원
 }
 
 TR_CODE_FIELDS_LIST_MAP = {
@@ -308,4 +404,6 @@ TR_CODE_FIELDS_LIST_MAP = {
     "DHA": AFTER_MARKET_ORDER_BOOK_FIELDS,        # 코스닥 시간외 단일가 호가
     "DK3": AFTER_MARKET_TICK_FIELDS,              # 코스닥 시간외 단일가 체결
     "VI_": STOCK_VI_ON_OFF_FIELDS,                # 주식 VI 발동해제
+    "K1_": BROKER_INFO_FIELDS,                    # 코스피 거래원
+    "OK_": BROKER_INFO_FIELDS,                    # 코스닥 거래원
 }
