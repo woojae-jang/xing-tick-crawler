@@ -1,10 +1,11 @@
+# python setup.py bdist_wheel
 # twine upload
 
 from setuptools import setup, find_packages
 
 setup(
     name="xing-tick-crawler",
-    version='0.0.5',
+    version='0.0.6',
     url="https://github.com/quantrading/xing-tick-crawler",
     license="MIT",
     author="Jang Woo Jae",
