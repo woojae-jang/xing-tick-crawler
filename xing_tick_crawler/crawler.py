@@ -26,29 +26,23 @@ TODAY_PATH = f"{TICKER_DATA_FOLDER_PATH}/{TODAY}"
 utils.make_dir(TODAY_PATH)
 
 
-def stock_market_crawler(queue: Queue, **kwargs):
+def crawler_1(queue: Queue, **kwargs):
+    stock_futures_order_book = kwargs.get('STOCK_FUTURES_ORDER_BOOK', True)
+    stock_futures_order_tick = kwargs.get('STOCK_FUTURES_TICK', True)
     kospi_order_book = kwargs.get('KOSPI_ORDER_BOOK', True)
     kospi_tick = kwargs.get('KOSPI_TICK', True)
-    kosdaq_order_book = kwargs.get('KOSDAQ_ORDER_BOOK', True)
-    kosdaq_tick = kwargs.get('KOSDAQ_TICK', True)
     kospi_after_marekt_order_book = kwargs.get('KOSPI_AFTER_MARKET_ORDER_BOOK', True)
     kospi_after_market_tick = kwargs.get('KOSPI_AFTER_MARKET_TICK', True)
-    kosdaq_after_market_order_book = kwargs.get('KOSDAQ_AFTER_MARKET_ORDER_BOOK', True)
-    kosdaq_after_market_tick = kwargs.get('KOSDAQ_AFTER_MARKET_TICK', True)
     stock_vi_on_off = kwargs.get('STOCK_VI_ON_OFF', True)
     kospi_broker_info = kwargs.get('KOSPI_BROKER_INFO', True)
-    kosdaq_broker_info = kwargs.get('KOSDAQ_BROKER_INFO', True)
 
     _ = XingAPI.login(is_real_server=True)
-
-    total_code_list = []
 
     # ################################# 코스피 ###################################################################
     listed_code_df = XingAPI.get_listed_code_list(market_type=1)
     listed_code_df.to_csv(f"{TODAY_PATH}/kospi_listed_code.csv", encoding='utf-8-sig')
 
     code_list = listed_code_df['단축코드'].tolist()
-    total_code_list = [*total_code_list, *code_list]
 
     # 호가
     if kospi_order_book:
@@ -76,12 +70,50 @@ def stock_market_crawler(queue: Queue, **kwargs):
         real_time_stock_after_market_kospi_tick.set_code_list(code_list)
     # ############################################################################################################
 
+    # ################################# 주식선물 ##################################################################
+    listed_code_df = XingAPI.get_stock_futures_listed_code_list()
+    listed_code_df.to_csv(f"{TODAY_PATH}/stock_futures_listed_code.csv", encoding='utf-8-sig')
+
+    code_list = listed_code_df['단축코드'].tolist()
+
+    # 호가
+    if stock_futures_order_book:
+        real_time_stock_futures_order_book = RealTimeStockFuturesOrderBook(queue=queue)
+        real_time_stock_futures_order_book.set_code_list(code_list, field="futcode")
+
+    # 체결
+    if stock_futures_order_tick:
+        real_time_stock_futures_tick = RealTimeStockFuturesTick(queue=queue)
+        real_time_stock_futures_tick.set_code_list(code_list, field="futcode")
+    # ############################################################################################################
+
+    # 주식VI발동해제
+    if stock_vi_on_off:
+        real_time_stock_vi_on_off = RealTimeStockViOnOff(queue=queue)
+        total_code_list = [
+            XingAPI.get_listed_code_list(market_type=1)['단축코드'].tolist(),
+            XingAPI.get_listed_code_list(market_type=2)['단축코드'].tolist(),
+        ]
+        real_time_stock_vi_on_off.set_code_list(total_code_list)
+
+    while True:
+        pythoncom.PumpWaitingMessages()
+
+
+def crawler_2(queue: Queue, **kwargs):
+    kosdaq_order_book = kwargs.get('KOSDAQ_ORDER_BOOK', True)
+    kosdaq_tick = kwargs.get('KOSDAQ_TICK', True)
+    kosdaq_after_market_order_book = kwargs.get('KOSDAQ_AFTER_MARKET_ORDER_BOOK', True)
+    kosdaq_after_market_tick = kwargs.get('KOSDAQ_AFTER_MARKET_TICK', True)
+    kosdaq_broker_info = kwargs.get('KOSDAQ_BROKER_INFO', True)
+
+    _ = XingAPI.login(is_real_server=True)
+
     # ################################# 코스닥 ###################################################################
     listed_code_df = XingAPI.get_listed_code_list(market_type=2)
     listed_code_df.to_csv(f"{TODAY_PATH}/kosdaq_listed_code.csv", encoding='utf-8-sig')
 
     code_list = listed_code_df['단축코드'].tolist()
-    total_code_list = [*total_code_list, *code_list]
 
     # 호가
     if kosdaq_order_book:
@@ -107,38 +139,6 @@ def stock_market_crawler(queue: Queue, **kwargs):
     if kosdaq_after_market_tick:
         real_time_stock_after_market_kosdaq_tick = RealTimeStockAfterMarketKosdaqTick(queue=queue)
         real_time_stock_after_market_kosdaq_tick.set_code_list(code_list)
-    # ############################################################################################################
-
-    # 주식VI발동해제
-    if stock_vi_on_off:
-        real_time_stock_vi_on_off = RealTimeStockViOnOff(queue=queue)
-        real_time_stock_vi_on_off.set_code_list(total_code_list)
-
-    while True:
-        pythoncom.PumpWaitingMessages()
-
-
-def futures_option_market_crawler(queue: Queue, **kwargs):
-    stock_futures_order_book = kwargs.get('STOCK_FUTURES_ORDER_BOOK', True)
-    stock_futures_order_tick = kwargs.get('STOCK_FUTURES_TICK', True)
-
-    _ = XingAPI.login(is_real_server=True)
-
-    # ################################# 주식선물 ##################################################################
-    listed_code_df = XingAPI.get_stock_futures_listed_code_list()
-    listed_code_df.to_csv(f"{TODAY_PATH}/stock_futures_listed_code.csv", encoding='utf-8-sig')
-
-    code_list = listed_code_df['단축코드'].tolist()
-
-    # 호가
-    if stock_futures_order_book:
-        real_time_stock_futures_order_book = RealTimeStockFuturesOrderBook(queue=queue)
-        real_time_stock_futures_order_book.set_code_list(code_list, field="futcode")
-
-    # 체결
-    if stock_futures_order_tick:
-        real_time_stock_futures_tick = RealTimeStockFuturesTick(queue=queue)
-        real_time_stock_futures_tick.set_code_list(code_list, field="futcode")
     # ############################################################################################################
 
     while True:
