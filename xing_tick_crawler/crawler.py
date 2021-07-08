@@ -30,7 +30,6 @@ def crawler_1(queue: Queue, **kwargs):
     stock_futures_order_book = kwargs.get('STOCK_FUTURES_ORDER_BOOK', True)
     stock_futures_order_tick = kwargs.get('STOCK_FUTURES_TICK', True)
     kospi_order_book = kwargs.get('KOSPI_ORDER_BOOK', True)
-    kospi_tick = kwargs.get('KOSPI_TICK', True)
     kospi_after_marekt_order_book = kwargs.get('KOSPI_AFTER_MARKET_ORDER_BOOK', True)
     kospi_after_market_tick = kwargs.get('KOSPI_AFTER_MARKET_TICK', True)
     stock_vi_on_off = kwargs.get('STOCK_VI_ON_OFF', True)
@@ -48,11 +47,6 @@ def crawler_1(queue: Queue, **kwargs):
     if kospi_order_book:
         real_time_kospi_order_book = RealTimeKospiOrderBook(queue=queue)
         real_time_kospi_order_book.set_code_list(code_list)
-
-    # 체결
-    if kospi_tick:
-        real_time_kospi_tick = RealTimeKospiTick(queue=queue)
-        real_time_kospi_tick.set_code_list(code_list)
 
     # 거래원
     if kospi_broker_info:
@@ -102,7 +96,6 @@ def crawler_1(queue: Queue, **kwargs):
 
 def crawler_2(queue: Queue, **kwargs):
     kosdaq_order_book = kwargs.get('KOSDAQ_ORDER_BOOK', True)
-    kosdaq_tick = kwargs.get('KOSDAQ_TICK', True)
     kosdaq_after_market_order_book = kwargs.get('KOSDAQ_AFTER_MARKET_ORDER_BOOK', True)
     kosdaq_after_market_tick = kwargs.get('KOSDAQ_AFTER_MARKET_TICK', True)
     kosdaq_broker_info = kwargs.get('KOSDAQ_BROKER_INFO', True)
@@ -120,11 +113,6 @@ def crawler_2(queue: Queue, **kwargs):
         real_time_kosdaq_order_book = RealTimeKosdaqOrderBook(queue=queue)
         real_time_kosdaq_order_book.set_code_list(code_list)
 
-    # 체결
-    if kosdaq_tick:
-        real_time_kosdaq_tick = RealTimeKosdaqTick(queue=queue)
-        real_time_kosdaq_tick.set_code_list(code_list)
-
     # 거래원
     if kosdaq_broker_info:
         real_time_kosdaq_broker_info = RealTimeKosdaqBrokerInfo(queue=queue)
@@ -140,6 +128,38 @@ def crawler_2(queue: Queue, **kwargs):
         real_time_stock_after_market_kosdaq_tick = RealTimeStockAfterMarketKosdaqTick(queue=queue)
         real_time_stock_after_market_kosdaq_tick.set_code_list(code_list)
     # ############################################################################################################
+
+    while True:
+        pythoncom.PumpWaitingMessages()
+
+
+def crawl_kospi_tick(queue: Queue):
+    """
+    코스피 틱데이터
+    """
+    _ = XingAPI.login(is_real_server=True)
+
+    listed_code_df = XingAPI.get_listed_code_list(market_type=1)
+    code_list = listed_code_df['단축코드'].tolist()
+
+    real_time_kospi_tick = RealTimeKospiTick(queue=queue)
+    real_time_kospi_tick.set_code_list(code_list)
+
+    while True:
+        pythoncom.PumpWaitingMessages()
+
+
+def crawl_kosdaq_tick(queue: Queue):
+    """
+    코스닥 틱데이터
+    """
+    _ = XingAPI.login(is_real_server=True)
+
+    listed_code_df = XingAPI.get_listed_code_list(market_type=2)
+    code_list = listed_code_df['단축코드'].tolist()
+
+    real_time_kosdaq_tick = RealTimeKosdaqTick(queue=queue)
+    real_time_kosdaq_tick.set_code_list(code_list)
 
     while True:
         pythoncom.PumpWaitingMessages()
