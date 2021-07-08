@@ -5,11 +5,11 @@ from setuptools import setup, find_packages
 
 setup(
     name="xing-tick-crawler",
-    version='0.0.6',
+    version='0.0.7',
     url="https://github.com/quantrading/xing-tick-crawler",
     license="MIT",
     author="Jang Woo Jae",
-    author_email="wojae.jang@gmail.com",
+    author_email="woojae.jang26@gmail.com",
     description="ebest xing api wrapper",
     install_requires=[
         'pandas',
