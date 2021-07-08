@@ -110,6 +110,139 @@ class XingAPI:
         return df
 
     @classmethod
+    def t1310(cls, code) -> pd.DataFrame:
+        """
+        t1310 주식당일전일분틱조회
+        연속데이터 조회
+        """
+        stock_code = code
+        t1310 = win32com.client.DispatchWithEvents("XA_DataSet.XAQuery", XAQueryEventHandler)
+        t1310.ResFileName = f"{RES_FOLDER_PATH}/t1310.res"
+
+        day_type = '0'
+        feq_type = '1'
+
+        # 연속조회 여부
+        next_data = False
+        data = []
+        is_last = False
+
+        while True:
+            t1310.SetFieldData('t1310InBlock', 'daygb', 0, day_type)  # 0: 당일, 1: 전일
+            t1310.SetFieldData('t1310InBlock', 'timegb', 0, feq_type)  # 0: 분, 1: 틱
+            t1310.SetFieldData('t1310InBlock', 'shcode', 0, stock_code)
+            t1310.SetFieldData('t1310InBlock', 'endtime', 0, '')
+            if next_data is False:
+                t1310.SetFieldData('t1310InBlock', 'cts_time', 0, '')
+            else:
+                t1310.SetFieldData('t1310InBlock', 'cts_time', 0, cts_time)
+
+            if next_data:
+                cls.request_api(t1310, 1)
+            else:
+                cls.request_api(t1310, 0)
+            cls.wait_query(XAQueryEventHandler)
+
+            cts_time = t1310.GetFieldData("t1310OutBlock", "cts_time", 0)
+            next_data = True
+
+            count = t1310.GetBlockCount("t1310OutBlock1")
+            if count == 0:
+                break
+            for i in range(count):
+                data.append([
+                    t1310.GetFieldData("t1310OutBlock1", "chetime", i),
+                    t1310.GetFieldData("t1310OutBlock1", "price", i),
+                    t1310.GetFieldData("t1310OutBlock1", "sign", i),
+                    t1310.GetFieldData("t1310OutBlock1", "change", i),
+                    t1310.GetFieldData("t1310OutBlock1", "diff", i),
+                    t1310.GetFieldData("t1310OutBlock1", "cvolume", i),
+                    t1310.GetFieldData("t1310OutBlock1", "chdegree", i),
+                    t1310.GetFieldData("t1310OutBlock1", "volume", i),
+                    t1310.GetFieldData("t1310OutBlock1", "mdvolume", i),
+                    t1310.GetFieldData("t1310OutBlock1", "mdchecnt", i),
+                    t1310.GetFieldData("t1310OutBlock1", "msvolume", i),
+                    t1310.GetFieldData("t1310OutBlock1", "mschecnt", i),
+                    t1310.GetFieldData("t1310OutBlock1", "revolume", i),
+                    t1310.GetFieldData("t1310OutBlock1", "rechecnt", i),
+                ])
+
+        df = pd.DataFrame(data, columns={
+            "chetime": str,
+            "price": str,
+            "sign": str,
+            "change": str,
+            "diff": str,
+            "cvolume": str,
+            "chdegree": str,
+            "volume": str,
+            "mdvolume": str,
+            "mdchecnt": str,
+            "msvolume": str,
+            "mschecnt": str,
+            "revolume": str,
+            "rechecnt": str,
+        })
+        df = df.sort_values('chetime', ascending=True)
+        return df
+
+    @classmethod
+    def t8411(cls, code: str, date: str) -> pd.DataFrame:
+        """
+        t8411 주식차트(틱/n틱)
+        연속데이터 조회
+        """
+        stock_code = code
+        t8411 = win32com.client.DispatchWithEvents("XA_DataSet.XAQuery", XAQueryEventHandler)
+        t8411.ResFileName = f"{RES_FOLDER_PATH}/t8411.res"
+
+        # 연속조회 여부
+        next_data = False
+        data = []
+
+        while True:
+            t8411.SetFieldData('t8411InBlock', 'shcode', 0, stock_code)
+            t8411.SetFieldData('t8411InBlock', 'ncnt', 0, 1)    # n틱
+            t8411.SetFieldData('t8411InBlock', 'qrycnt', 0, 500)  # 요청건수 비압축 최대 500
+            t8411.SetFieldData('t8411InBlock', 'sdate', 0, date)  # 시작일자
+            t8411.SetFieldData('t8411InBlock', 'edate', 0, date)  # 종료일자
+            t8411.SetFieldData('t8411InBlock', 'comp_yn', 0, 'N')  # 압축여부
+            if next_data is False:
+                t8411.SetFieldData('t8411InBlock', 'cts_time', 0, '')
+            else:
+                t8411.SetFieldData('t8411InBlock', 'cts_date', 0, date)
+                t8411.SetFieldData('t8411InBlock', 'cts_time', 0, cts_time)
+
+            if next_data:
+                cls.request_api(t8411, 1)
+            else:
+                cls.request_api(t8411, 0)
+            cls.wait_query(XAQueryEventHandler)
+
+            cts_time = t8411.GetFieldData("t8411OutBlock", "cts_time", 0)
+            next_data = True
+
+            count = t8411.GetBlockCount("t8411OutBlock1")
+            if count == 0:
+                break
+            for i in range(count):
+                data.append([
+                    t8411.GetFieldData("t8411OutBlock1", "date", i),
+                    t8411.GetFieldData("t8411OutBlock1", "time", i),
+                    t8411.GetFieldData("t8411OutBlock1", "close", i),
+                    t8411.GetFieldData("t8411OutBlock1", "jdiff_vol", i),
+                ])
+
+        df = pd.DataFrame(data, columns={
+            "date": str,
+            "time": str,
+            "close": str,
+            "jdiff_vol": str,
+        })
+        df = df.sort_values(['date', 'time'], ascending=True)
+        return df
+
+    @classmethod
     def t1702(cls, code, start_date: str, end_date: str) -> pd.DataFrame:
         """
         t1702 외인/기관 종목별동향
@@ -256,6 +389,60 @@ class XingAPI:
             "단축코드": str,
             "확장코드": str,
             "기초자산코드": str,
+        })
+
+        return df
+
+    @classmethod
+    def t8433(cls) -> pd.DataFrame:
+        """
+        [t8433] 지수옵션마스터조회API용
+        """
+        t8433 = win32com.client.DispatchWithEvents("XA_DataSet.XAQuery", XAQueryEventHandler)
+        t8433.ResFileName = f"{RES_FOLDER_PATH}/t8433.res"
+
+        args = {
+            "dummy": "1",  # Dummy
+        }
+
+        for key, value in args.items():
+            t8433.SetFieldData('t8433InBlock', key, 0, value)
+
+        cls.request_api(t8433, 0)
+        cls.wait_query(XAQueryEventHandler)
+
+        count = t8433.GetBlockCount("t8433OutBlock")
+
+        col_list = [
+            "hname",
+            "shcode",
+            "expcode",
+            "hprice",
+            "lprice",
+            "jnilclose",
+            "jnilhigh",
+            "jnillow",
+            "recprice",
+        ]
+
+        data_list = []
+        for i in range(count):
+            values = []
+            for col in col_list:
+                value = t8433.GetFieldData("t8433OutBlock", col, i)
+                values.append(value)
+            data_list.append(values)
+
+        df = pd.DataFrame(data_list, columns={
+            "종목명": str,
+            "단축코드": str,
+            "확장코드": str,
+            "상한가": float,
+            "하한가": float,
+            "전일종가": float,
+            "전일고가": float,
+            "전일저가": float,
+            "기준가": float,
         })
 
         return df
